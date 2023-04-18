@@ -7,26 +7,43 @@ const int MAX=100;
 
 class Studentname
 {
-public:
+private:
     string studentname;
     int studentID;
+
+public:
+    void setName(string name)
+    {
+        studentname=name;
+    }
+
+    void setID(int id)
+    {
+        studentID=id;
+    }
+
+    void Show()
+    {
+        cout<<"姓名:"<<studentname<<"\n"<<"学号:"<<studentID<<endl;
+    }
 };
 
 void Setname()
 {
     Studentname stud;
-    stud.studentname="zhuheqin";
-    stud.studentID=123456;
-
-    cout<<"该学生姓名为:"<<stud.studentname<<endl;
-    cout<<"该学生学号为:"<<stud.studentID<<endl;
+    stud.setName("zhuheqin");
+    stud.setID(123456);
+    stud.Show();
+   // cout<<"该学生姓名为:"<<stud.studentname<<endl;
+    //cout<<"该学生学号为:"<<stud.studentID<<endl;
+    
 
 }
 
 int main()
 {
     Setname();
-
+    
     system("pause");
 
     return 0;
