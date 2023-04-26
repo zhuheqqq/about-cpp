@@ -1,3 +1,4 @@
+//数组类的封装
 //#program once
 #include "MyArray.cpp"
 

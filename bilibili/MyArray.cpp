@@ -1,3 +1,4 @@
+//数组类的封装
 #include "MyArray.hpp"
 
 //默认构造函数
