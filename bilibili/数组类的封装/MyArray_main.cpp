@@ -1,5 +1,5 @@
 //数组类的封装
-//#program once
+#pragma once
 #include "MyArray.cpp"
 
 void test01()
