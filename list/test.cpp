@@ -7,7 +7,7 @@ struct D
     std::string y;
     float z;
     D(int x_ = 1, std::string y_ = "hello", float z_ = 3.14)
-        : x(x_), y(y_), z(z_)
+        : x(x_), y(y_), z(z_)//初始化列表
     {
     }
 };
