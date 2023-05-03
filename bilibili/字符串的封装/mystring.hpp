@@ -5,6 +5,7 @@ using namespace std;
 
 class MyString
 {
+    //友元
     friend ostream& operator<<(ostream & cout,MyString & str);
     friend istream& operator>>(istream & cin,MyString & str);
 public:
