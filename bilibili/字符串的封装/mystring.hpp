@@ -5,6 +5,8 @@ using namespace std;
 
 class MyString
 {
+    friend ostream& operator<<(ostream & cout,MyString & str);
+    friend istream& operator>>(istream & cin,MyString & str);
 public:
     //有参构造函数
     MyString(char *str);
