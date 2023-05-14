@@ -1,7 +1,7 @@
 #include <iostream>
 //使用你的名字替换YOUR_NAME
 #include<gtest/gtest.h>
-namespace YOUR_NAME
+namespace zhuheqin
 {
     template <class T>
     // list存储的节点
@@ -16,6 +16,7 @@ namespace YOUR_NAME
             : data_(data), prev_(nullptr), next_(nullptr)
         {
         }
+        //默认构造函数
         node()
             : prev_(nullptr), next_(nullptr)
         {
@@ -43,29 +44,42 @@ namespace YOUR_NAME
         }
         //迭代到下一个节点
         //++it
-        iterator_ &operator++()
-        {
+        iterator_ &operator++()//返回引用,无限的对指针进行引用,连续赋值
+        {                      //引用就是为了可以在外面改变他的值（使它从左值变为右值）
+                            //左值可以修改因为他是变量，右值不可以修改 
+            data_=data_->next_;
+            return *this;//返回值为移动后的节点
         }
         //迭代到前一个节点
         //--it
         iterator_ &operator--()
         {
+            data_=data_->prev_;
+            return *this;
         }
         // it++
-        iterator operator++(int)
+        iterator operator++(int)//占位参数,写int编译器自动区分为后置++
         {
+            iterator tmp(*this);
+            data_=data_->next;
+            return tmp;//返回的是值,不能返回局部对象的引用
         }
         //it--
         iterator operator--(int)
         {
+            iterator tmp(*this);
+            data_=data_->prev_;
+            return tmp;
         }
         //获得迭代器的值
-        T &operator*()
+        T &operator*()//返回引用本身
         {
+            return *(data_).data_;//list每个位置存储的是结构体
         }
         //获得迭代器对应的指针
         T *operator->()
         {
+            return this->data_->data_;
         }
         //重载==
         bool operator==(const iterator_ &t)
@@ -97,7 +111,8 @@ namespace YOUR_NAME
         //拷贝构造，要求实现深拷贝
         list(const list<T> &lt)
         {
-            成员变量=(成员变量类型)malloc(sizeof(strlen(成员变量)+1));
+            this->head_=new node_[strlen(lt.head_)+1];
+            lt.head_=this->head;
         }
         template <class inputIterator>
         //迭代器构造

@@ -1,283 +1,195 @@
 #include "list.hpp"
+#include <gtest/gtest.h>
+#include <memory>
 using namespace YOUR_NAME;
 using namespace std;
+
+class listIntTest : public ::testing::Test
+{
+protected:
+    listIntTest()
+    {
+        list_ = make_unique<list<int>>();
+    }
+    ~listIntTest() override = default;
+    virtual void SetUp()
+    {
+        list_->push_back(1);
+        list_->push_back(2);
+    }
+    virtual void TearDown() override {}
+
+    std::unique_ptr<list<int>> list_;
+};
+
+TEST_F(listIntTest, BasicFunctionality)
+{
+    EXPECT_EQ(list_->size(), 2);
+    EXPECT_FALSE(list_->empty());
+    EXPECT_EQ(list_->front(), 1);
+    EXPECT_EQ(list_->back(), 2);
+
+    auto it = list_->begin();
+    EXPECT_EQ(*it, 1);
+    it++;
+    EXPECT_EQ(*it, 2);
+    list_->clear();
+    EXPECT_TRUE(list_->empty());
+    EXPECT_EQ(list_->size(), 0);
+}
+
+TEST_F(listIntTest, DefaultConstruct)
+{
+    list<int> l;
+    EXPECT_EQ(l.size(), 0);
+    EXPECT_TRUE(l.empty());
+}
+
+TEST_F(listIntTest, IteratorConstruct)
+{
+    std::cout <<"LINE: " <<__LINE__ << endl;
+
+    for (int i = 3; i <= 10; i++)
+    {
+        EXPECT_TRUE(list_->push_back(i));
+    }
+
+    auto pos = list_->find(3);
+    list<int> sublist(list_->begin(), pos);
+    auto it = list_->begin();
+    for (int i = 1; it != list_->end(); it++, i++)
+    {
+        EXPECT_EQ(*it, i);
+    }
+}
+
+TEST_F(listIntTest, DeepCopyConstruct)
+{
+    list<int> copy(*list_);
+
+    // 比较两个list对象，测试是否通过
+    EXPECT_EQ(copy.size(), list_->size());
+    auto it1 = copy.begin();
+    auto it2 = list_->begin();
+
+    while (it2 != list_->end())
+    {
+        EXPECT_EQ(*it1, *it2);
+        it1++;
+        it2++;
+    }
+}
+
+TEST_F(listIntTest, DeepCopyAssign)
+{
+    list<int> copy;
+    for (int i = 0; i < 10; ++i)
+    {
+        copy.push_back(i);
+    }
+    EXPECT_EQ(copy.size(), 10);
+    EXPECT_GT(copy.size(), list_->size());
+    copy = *list_;
+
+    EXPECT_EQ(copy.size(), list_->size());
+    auto it1 = list_->begin();
+    auto it2 = copy.begin();
+    for (; it1 != list_->end(); ++it1, ++it2)
+    {
+        EXPECT_EQ(*it1, *it2);
+    }
+}
+
+TEST_F(listIntTest, Add)
+{
+    for (int i = 3; i <= 10; i++)
+    {
+        EXPECT_TRUE(list_->push_back(i));
+    }
+    EXPECT_EQ(list_->size(), 10);
+    auto pos1 = list_->find(5);
+    if (pos1 != list_->end())
+    {
+        EXPECT_TRUE(list_->insert(pos1, 11, false));
+        // 11插入在5的前面
+        auto pos2 = list_->find(5);
+        pos2--;
+        EXPECT_EQ(*pos2, 11);
+        EXPECT_EQ(list_->size(), 11);
+    }
+    auto pos3 = list_->find(6);
+    if (pos3 != list_->end())
+    {
+        EXPECT_TRUE(list_->insert(pos3, 12));
+        auto pos4 = list_->find(6);
+        pos4++;
+        EXPECT_EQ(*pos4, 12);
+    }
+    EXPECT_TRUE(list_->push_front(0));
+    EXPECT_EQ(list_->front(), 0);
+}
+
+TEST_F(listIntTest, Delete)
+{
+    EXPECT_TRUE(list_->pop_front());
+    EXPECT_EQ(list_->front(), 2);
+    EXPECT_EQ(list_->back(), 2);
+    EXPECT_TRUE(list_->pop_back());
+    EXPECT_TRUE(list_->empty());
+
+    for (int i = 0; i < 10; i++)
+    {
+        EXPECT_TRUE(list_->push_back(i));
+    }
+
+    auto it = list_->begin();
+    it++;
+    EXPECT_TRUE(list_->erase(it)); //删除第二个元素
+    EXPECT_EQ(list_->size(), 9);
+    auto pos = list_->find(1);
+    // EXPECT_EQ(pos,nullptr);
+}
 struct D
 {
     int x;
     std::string y;
     float z;
     D(int x_ = 1, std::string y_ = "hello", float z_ = 3.14)
-        : x(x_), y(y_), z(z_)//初始化列表
+        : x(x_), y(y_), z(z_)
     {
     }
 };
-void test1()
+class listDTest : public ::testing::Test
 {
-    list<int> l1;
-
-    l1.push_back(1);
-    l1.push_back(2);
-    l1.push_back(3);
-    l1.push_front(4);
-    list<int>::Iterator it = l1.begin();
-    while (it != l1.end())
+protected:
+    listDTest()
     {
-        std::cout << (*it) << std::endl;
-        ++it;
+        list_ = make_unique<list<D>>();
     }
-    l1.clear();
-    if (l1.empty())
+    ~listDTest() override = default;
+    virtual void SetUp()
     {
-        std::cout << "empty() ok" << std::endl;
     }
-}
-void test2()
-{
-    list<D> l1;
-    l1.push_back(D(1, "aaa", 1.1));
-    l1.push_back(D(2, "bbb", 2.2));
-    l1.pop_front();
-    auto it = l1.begin();
-    while (it != l1.end())
-    {
-        std::cout << it->x << " " << it->y << " " << it->z << std::endl;
-        ++it;
-    }
-}
-void test3()
-{
-    list<int> l1;
-    l1.push_back(1);
-    l1.push_back(2);
-    l1.push_back(3);
-    l1.push_back(4);
-    list<int>::Iterator pos = l1.find(2);
-    if (pos != l1.end())
-    {
-        l1.insert(pos, 5, false); //插入到前面
-    }
-    if (l1.size() == 5)
-    {
-        std::cout << "success" << std::endl;
-    }
-    auto it = l1.begin();
-    while (it != l1.end())
-    {
-        std::cout << (*it) << " ";
-        ++it;
-    }
-    //输出1 5 2 3 4
-}
-void test4()
-{
-    list<int> l1;
-    l1.push_back(1);
-    l1.push_back(2);
-    l1.push_back(3);
-    l1.push_back(4);
-    list<int>::Iterator pos = l1.find(2);
-    if (pos != l1.end())
-    {
-        l1.erase(pos);
-    }
-    list<int> l2(l1);
-    l2.push_back(3);
-    //l2此时应该为1 3 4 3
-    //l1此时应该为1 3 4
-    if (l1.size() == l2.size())
-    {
-        std::cout << "error" << std::endl;
-    }
-}
-void test5()
-{
-    list<int> l1;
-    l1.push_back(1);
-    l1.push_back(2);
-    l1.push_back(3);
-    l1.push_back(4);
-    auto pos=l1.find(3);
-    list<int> l2(l1.begin(),pos);
-    //l2中应该为1 2
-    if(l2.size()!=2)
-    {
-        std::cout<<"error"<<std::endl;
-    }
+    virtual void TearDown() override {}
 
-}
-
-// 测试基本功能以及迭代器的操作
-void test6()
-{
-    list<int> l;
-    l.push_back(2);
-    l.push_back(3);
-    l.push_back(4);
-    l.push_front(1);
-
-    for (auto i = l.begin(); i != l.end(); ++i)
-    {
-        cout << *i << " ";
-    }
-
-    cout << endl;
-
-    l.pop_front();
-
-    for (auto i = l.begin(); i != l.end(); ++i)
-    {
-        cout << *i << " ";
-    }
-
-    cout << endl;
-
-    auto it = l.find(3);
-    l.insert(it, 10, false);
-
-    for (auto i = l.begin(); i != l.end(); ++i)
-    {
-        cout << *i << " ";
-    }
-
-    cout << endl;
-
-    l.erase(l.begin());
-    l.erase(--l.end());
-
-    for (auto i = l.begin(); i != l.end(); ++i)
-    {
-        cout << *i << " ";
-    }
-
-    cout << endl;
-}
-
-// 测试深拷贝
-void test7()
-{
-    list<int> l1;
-    l1.push_back(1);
-    l1.push_back(2);
-    l1.push_back(3);
-
-    list<int> l2 = l1; // 测试拷贝构造
-
-    l2.push_back(4);
-    l2.push_back(5);
-
-    for (auto i = l1.begin(); i != l1.end(); ++i)
-    {
-        cout << *i << " ";
-    }
-
-    cout << endl;
-
-    for (auto i = l2.begin(); i != l2.end(); ++i)
-    {
-        cout << *i << " ";
-    }
-
-    cout << endl;
-
-    list<int> l3;
-    l3.push_back(6);
-    l3.push_back(7);
-
-    l3 = l2; // 测试拷贝赋值
-
-    for (auto i = l2.begin(); i != l2.end(); ++i)
-    {
-        cout << *i << " ";
-    }
-
-    cout << endl;
-
-    for (auto i = l3.begin(); i != l3.end(); ++i)
-    {
-        cout << *i << " ";
-    }
-
-    cout << endl;
-}
-
-// 测试空list
-void test8()
-{
-    list<int> l;
-    cout << l.empty() << endl; // 应输出1，即true
-    l.push_back(1);
-    cout << l.empty() << endl; // 应输出0，即false
-}
-
-// 测试边界条件下的操作
-void test9()
-{
-    list<int> l;
-
-    cout << (l.begin() == l.end()) << endl; // 应输出1，即true
-
-    l.push_back(1);
-    l.erase(l.begin());
-
-    cout << (l.begin() == l.end()) << endl; // 应输出1，即true
-
-    l.push_back(1);
-    l.pop_front();
-
-    cout << (l.begin() == l.end()) << endl; // 应输出1，即true
-
-    auto it = l.begin();
-    ++it;
-    l.erase(it);
-
-    cout << (l.begin() == l.end()) << endl; // 应输出1，即true
-}
-
-// 测试自定义类型
-struct Person
-{
-    int age;
-    string name;
-
-    bool operator==(const Person &other)
-    {
-        return age == other.age && name == other.name;
-    }
+    std::unique_ptr<list<D>> list_;
 };
 
-void test10()
+TEST_F(listDTest, Random)
 {
-    list<Person> l;
+    list_->push_back({18,"Tom"});
+    list_->push_back({3,"Jerry"});
+    EXPECT_EQ(list_->size(),2);
+    auto it=list_->begin();
+    EXPECT_EQ(it->x,18);
+    EXPECT_EQ(it->y,"Tom");
 
-    l.push_back({18, "Tom"});
-    l.push_back({19, "Jerry"});
-
-    auto it = l.find({18, "Tom"});
-
-    if (it != l.end())
-    {
-        cout << it->name << endl; // 应输出Tom
-    }
-
-    l.clear();
-
-    cout << l.empty() << endl; // 应输出1，即true
-}
-
-int main()
-{
-    test1();
-    test2();
-    test3();
-    test4();
-    test5();
-    test6();
-    test7();
-    test8();
-    test9();
-    test10();
-
-    return 0;
 }
 
 
+int main(int argc, char *argv[])
+{
+    testing::InitGoogleTest(&argc, argv); //初始化gtest
+
+    return RUN_ALL_TESTS();
+}
