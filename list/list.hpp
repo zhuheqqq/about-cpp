@@ -84,10 +84,12 @@ namespace zhuheqin
         //重载==
         bool operator==(const iterator_ &t)
         {
+            return data_==t.data_;
         }
         //重载！=
         bool operator!=(const iterator_ &t)
         {
+            return data_!=t.data_;
         }
 
         //**可以添加需要的成员变量与成员函数**
@@ -107,29 +109,67 @@ namespace zhuheqin
         //构造函数
         list()
         {
+            head_=new node_;
+            head_->next_=head_;
+            head_->prev_=head_;
         }
         //拷贝构造，要求实现深拷贝
         list(const list<T> &lt)
         {
-            this->head_=new node_[strlen(lt.head_)+1];
-            lt.head_=this->head;
+            //初始化头节点
+            head_=new node_;
+            head_->next_=head_;
+            head_->prev_=head_;
+
+            for(const auto &e:lt)
+            {
+                push_back(e);
+            }
+
         }
         template <class inputIterator>
         //迭代器构造
         list(inputIterator begin, inputIterator end)
         {
+            head_=new node_;
+            head_->next_=head_;
+            head_->prev_=head_;
+
+            while(begin!=end)
+            {
+                push_back(*begin);
+                ++begin;
+            }
         }
 
         ~list()
         {
+            clear();
+            delete head_;
+            head_=nullptr;
         }
         //拷贝赋值
+        //先将被赋值的对象内容全部清空（保留头结点），然后讲新的节点插入即可。
         list<T> &operator=(const list<T> &lt)
         {
+            if(this!=&lt)
+            {
+                clear();
+                for(const auto &e:lt)
+                {
+                    push_back(e);
+                }
+            }
+            return *this;
         }
         //清空list中的数据
         void clear()
         {
+            iterator it=begin();
+            while(it!=end())
+            {
+                it=erase(it);
+            }
         }
         //返回容器中存储的有效节点个数
         size_t size() const
@@ -167,11 +207,13 @@ namespace zhuheqin
         //获得list第一个有效节点的迭代器
         Iterator begin() const
         {
+            return Iterator(head_->next);
         }
 
         //获得list最后一个节点的下一个位置，可以理解为nullptr
         Iterator end() const
         {
+            return Iterator(head_);
         }
         //查找data对应的迭代器
         Iterator find(const T &data) const
