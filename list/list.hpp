@@ -92,7 +92,7 @@ namespace zhuheqin
             return data_!=t.data_;
         }
 
-        //**可以添加需要的成员变量与成员函数*
+        //**可以添加需要的成员变量与成员函数**
     };
 
     template <class T>
