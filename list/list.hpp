@@ -61,7 +61,7 @@ namespace zhuheqin
         iterator operator++(int)//占位参数,写int编译器自动区分为后置++
         {
             iterator tmp(*this);
-            data_=data_->next;
+            data_=data_->next_;
             return tmp;//返回的是值,不能返回局部对象的引用
         }
         //it--
@@ -74,12 +74,12 @@ namespace zhuheqin
         //获得迭代器的值
         T &operator*()//返回引用本身
         {
-            return *(data_).data_;//list每个位置存储的是结构体
+            return data_->data_;//list每个位置存储的是结构体
         }
         //获得迭代器对应的指针
         T *operator->()
         {
-            return this->data_->data_;
+            return &data_->data_;
         }
         //重载==
         bool operator==(const iterator_ &t)
@@ -168,7 +168,9 @@ namespace zhuheqin
             iterator it=begin();
             while(it!=end())
             {
-                it=erase(it);
+                iterator tmp=it++;
+                erase(it);
+                it=tmp;
             }
         }
         //返回容器中存储的有效节点个数
@@ -185,27 +187,27 @@ namespace zhuheqin
             return true;
         }
         //尾插
-        void push_back(const T &data)
+        bool push_back(const T &data)
         {
-            insert(end(),data,true);
+            return insert(end(),data,true);
         }
         //头插
-        void push_front(const T &data)
+        bool push_front(const T &data)
         {
-            insert(begin(),data,false);
+            return insert(begin(),data,false);
         }
         //尾删
-        void pop_back()
+        bool pop_back()
         {
-            erase(begin());
+            return erase(begin());
         }
         //头删
-        void pop_front()
+        bool pop_front()
         {
-            erase(--end());//?
+            return erase(--end());//?
         }
         //默认新数据添加到pos迭代器的后面,根据back的方向决定插入在pos的前面还是后面
-        void insert(Iterator pos, const T &data, bool back = true)
+        bool insert(Iterator pos, const T &data, bool back = true)
         {
             node_*newnode=new node_(data);
             if(back!=true)//插入到pos前面
@@ -218,6 +220,8 @@ namespace zhuheqin
                 cur->prev_=newnode;
                 newnode->next_=cur;
 
+                return true;
+
             }else{//插入到pos后面
                 node_* cur=pos.data_;
                 node_* next=cur->next_;
@@ -226,23 +230,27 @@ namespace zhuheqin
                 next->prev_=newnode;
                 cur->next_=newnode;
                 newnode->prev_=cur;
+                return true;
             }
+            return false;
         }
         //删除pos位置的元素
-        void erase(Iterator pos)
+        bool erase(Iterator pos)
         {
             node_* prev=(pos.data_)->prev_;
-            node_* next=(pos.data_)->next;
+            node_* next=(pos.data_)->next_;
 
             prev->next_=next;
             next->prev_=prev;
             delete pos.data_;
+
+            return true;
         }
 
         //获得list第一个有效节点的迭代器
         Iterator begin() const
         {
-            return Iterator(head_->next);
+            return Iterator(head_->next_);
         }
 
         //获得list最后一个节点的下一个位置，可以理解为nullptr
@@ -263,11 +271,12 @@ namespace zhuheqin
             return end();
         }
         //获得第一个有效节点
-        node_ front() const
+        T front() const
         {
+            return head_->data_;
         }
         //获得最后一个有效节点
-        node_ back() const
+        T back() const
         {
         }
 
