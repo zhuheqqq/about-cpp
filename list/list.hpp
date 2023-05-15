@@ -178,30 +178,65 @@ namespace zhuheqin
         //判断是否为空
         bool empty() const
         {
+            if(begin()!=end())
+            {
+                return false;
+            }
+            return true;
         }
         //尾插
         void push_back(const T &data)
         {
+            insert(end(),data,true);
         }
         //头插
         void push_front(const T &data)
         {
+            insert(begin(),data,false);
         }
         //尾删
         void pop_back()
         {
+            erase(begin());
         }
         //头删
         void pop_front()
         {
+            erase(--end());//?
         }
         //默认新数据添加到pos迭代器的后面,根据back的方向决定插入在pos的前面还是后面
         void insert(Iterator pos, const T &data, bool back = true)
         {
+            node_*newnode=new node_(data);
+            if(back!=true)//插入到pos前面
+            {
+                node_* cur=pos.data_;
+                node_* prev=cur->prev_;
+
+                newnode->prev_=prev;
+                prev->next_=newnode;
+                cur->prev_=newnode;
+                newnode->next_=cur;
+
+            }else{//插入到pos后面
+                node_* cur=pos.data_;
+                node_* next=cur->next_;
+
+                newnode->next_=next;
+                next->prev_=newnode;
+                cur->next_=newnode;
+                newnode->prev_=cur;
+            }
         }
         //删除pos位置的元素
         void erase(Iterator pos)
         {
+            node_* prev=(pos.data_)->prev_;
+            node_* next=(pos.data_)->next;
+
+            prev->next_=next;
+            next->prev_=prev;
+            delete pos.data_;
         }
 
         //获得list第一个有效节点的迭代器
@@ -218,6 +253,14 @@ namespace zhuheqin
         //查找data对应的迭代器
         Iterator find(const T &data) const
         {
+            for(auto it=begin();it!=end();++it)
+            {
+                if(*it==data)
+                {
+                    return it;
+                }
+            }
+            return end();
         }
         //获得第一个有效节点
         node_ front() const
