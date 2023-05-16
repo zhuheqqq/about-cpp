@@ -247,6 +247,7 @@ namespace zhuheqin
 
             prev->next_=next;
             next->prev_=prev;
+            
             delete pos.data_;
 
             return true;
