@@ -181,6 +181,8 @@ namespace zhuheqin
                 iterator tmp=it;
                 ++it;
                 erase(tmp);
+                // erase(it);
+                // it=tmp;此时迭代器it已经失效,对其++会产生未定义的行为
             }
         }
         //返回容器中存储的有效节点个数
@@ -190,6 +192,7 @@ namespace zhuheqin
             for (auto iter = begin(); iter != end(); ++iter) {
                 ++count;
             }
+            //这里前置++和后置++效果一样但前置++效率更快
             return count;
         }
         //判断是否为空
@@ -204,7 +207,7 @@ namespace zhuheqin
         //尾插
         bool push_back(const T &data)
         {
-            return insert(end(),data,false);
+            return insert(end(),data,false);//这里虽然是向后插入数据,但仔细想一想就知道这里其实参数应该填false,才能达到尾插的效果
         }
         //头插
         bool push_front(const T &data)
@@ -214,7 +217,7 @@ namespace zhuheqin
         //尾删
         bool pop_back()
         {
-            return erase(--end());//??
+            return erase(--end());//end指向最后一个有效节点的下一个位置,尾删是删最后一个有效节点
         }
         //头删
         bool pop_front()
@@ -269,16 +272,22 @@ namespace zhuheqin
         //获得list第一个有效节点的迭代器
         Iterator begin() const
         {
+            //1:
             // Iterator it(head_->next_);
             // return it;
+
+            //2:
             return Iterator(head_->next_);
         }
 
         //获得list最后一个节点的下一个位置，可以理解为nullptr
         Iterator end() const
         {
-            
+
+            //1:
            return Iterator(head_);
+
+           //2:
         //    Iterator it(head_);
         //    return it;
         }
@@ -293,6 +302,7 @@ namespace zhuheqin
                 }
             }
             return end();
+            //or  return nullptr;
         }
         //获得第一个有效节点
         T front() const
