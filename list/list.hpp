@@ -81,6 +81,16 @@ namespace zhuheqin
         {
             return &data_->data_;
         }
+        /*在 C++ 中，当我们声明一个变量时，实际上是在内存中分配了一段存储空间，我们可以将这段存储空间理解为一个盒子，里面存储了我们所声明的变量的值。
+        那么当我们用一个变量去引用（取得）这个盒子里的值时，这个变量实际上指向了这个盒子，我们可以将这个变量理解为这个盒子的标签。
+        在这种情况下，我们可以通过这个变量对这个盒子里的值进行读取或修改，这就是所谓的引用。
+        回到你的问题，T &operator*() 中的 * 操作符是用来获取迭代器所指向的数据（或者称为节点）的引用。
+        由于 data_->data_ 表示的是数据本身，返回的就是数据本身的引用。
+        因此，通过对迭代器进行解引用操作 *，我们可以直接获取迭代器所指向的数据，并对数据进行操作。
+        而 T *operator->() 中的 -> 操作符则是用来获取迭代器所指向的数据（或者称为节点）的指针。
+        由于 data_->data_ 表示的是数据本身，我们需要使用取地址符 & 来获取数据的指针，即 &data_->data_，然后返回这个指针。
+        因此，通过对迭代器进行箭头操作 ->，我们可以获取迭代器所指向的数据的指针，并进行指针操作。*/
+
         //重载==
         bool operator==(const iterator_ &t)
         {
@@ -168,9 +178,9 @@ namespace zhuheqin
             iterator it=begin();
             while(it!=end())
             {
-                iterator tmp=it++;
-                erase(it);
-                it=tmp;
+                iterator tmp=it;
+                ++it;
+                erase(tmp);
             }
         }
         //返回容器中存储的有效节点个数
@@ -225,6 +235,7 @@ namespace zhuheqin
                 cur->prev_=newnode;
                 newnode->next_=cur;
 
+                
                 return true;
 
             }else{//插入到pos后面
@@ -235,41 +246,41 @@ namespace zhuheqin
                 next->prev_=newnode;
                 cur->next_=newnode;
                 newnode->prev_=cur;
+
+                
                 return true;
             }
+
             return false;
         }
         //删除pos位置的元素
         bool erase(Iterator pos)
         {
-            node_* prev=(pos.data_)->prev_;
-            node_* next=(pos.data_)->next_;
-
-            prev->next_=next;
-            next->prev_=prev;
+            node_* cur=pos.data_;
             
-            delete pos.data_;
 
+            cur->prev_->next_=cur->next_;
+            cur->next_->prev_=cur->prev_;
+
+            delete cur;
             return true;
         }
 
         //获得list第一个有效节点的迭代器
         Iterator begin() const
         {
+            // Iterator it(head_->next_);
+            // return it;
             return Iterator(head_->next_);
         }
 
         //获得list最后一个节点的下一个位置，可以理解为nullptr
         Iterator end() const
         {
-            // node_* node=head_;
-            // while(node->next_!=nullptr)
-            // {
-            //     node=node->next_;
-            // }
-            // return Iterator(node->next_);
-            //return nullptr;
-            return Iterator(head_);
+            
+           return Iterator(head_);
+        //    Iterator it(head_);
+        //    return it;
         }
         //查找data对应的迭代器
         Iterator find(const T &data) const
@@ -291,12 +302,7 @@ namespace zhuheqin
         //获得最后一个有效节点
         T back() const
         {
-            node_* node=head_;
-            while(node->next_!=nullptr)
-            {
-                node=node->next_;
-            }
-            return node->data_;
+            return head_->prev_->data_;//带头节点的双向循环链表
         }
 
     private:

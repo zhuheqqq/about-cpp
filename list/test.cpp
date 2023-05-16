@@ -147,7 +147,7 @@ TEST_F(listIntTest, Delete)
     EXPECT_TRUE(list_->erase(it)); //删除第二个元素
     EXPECT_EQ(list_->size(), 9);
     auto pos = list_->find(1);
-    // EXPECT_EQ(pos,nullptr);
+   // EXPECT_EQ(pos,nullptr);
 }
 struct D
 {
