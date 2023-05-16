@@ -176,6 +176,11 @@ namespace zhuheqin
         //返回容器中存储的有效节点个数
         size_t size() const
         {
+            size_t count = 0;
+            for (auto iter = begin(); iter != end(); ++iter) {
+                ++count;
+            }
+            return count;
         }
         //判断是否为空
         bool empty() const
@@ -189,7 +194,7 @@ namespace zhuheqin
         //尾插
         bool push_back(const T &data)
         {
-            return insert(end(),data,true);
+            return insert(end(),data,false);
         }
         //头插
         bool push_front(const T &data)
@@ -199,12 +204,12 @@ namespace zhuheqin
         //尾删
         bool pop_back()
         {
-            return erase(begin());
+            return erase(--end());//??
         }
         //头删
         bool pop_front()
         {
-            return erase(--end());//?
+            return erase(begin());
         }
         //默认新数据添加到pos迭代器的后面,根据back的方向决定插入在pos的前面还是后面
         bool insert(Iterator pos, const T &data, bool back = true)
@@ -256,6 +261,13 @@ namespace zhuheqin
         //获得list最后一个节点的下一个位置，可以理解为nullptr
         Iterator end() const
         {
+            // node_* node=head_;
+            // while(node->next_!=nullptr)
+            // {
+            //     node=node->next_;
+            // }
+            // return Iterator(node->next_);
+            //return nullptr;
             return Iterator(head_);
         }
         //查找data对应的迭代器
@@ -273,11 +285,17 @@ namespace zhuheqin
         //获得第一个有效节点
         T front() const
         {
-            return head_->data_;
+            return head_->next_->data_;
         }
         //获得最后一个有效节点
         T back() const
         {
+            node_* node=head_;
+            while(node->next_!=nullptr)
+            {
+                node=node->next_;
+            }
+            return node->data_;
         }
 
     private:
