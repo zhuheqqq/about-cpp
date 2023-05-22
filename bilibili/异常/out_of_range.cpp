@@ -24,7 +24,7 @@ void test01()
     {
         Person p(151);
     }//catch(out_of_range &e)
-    catch(exception &e)
+    catch(exception &e)//利用多态的形式
     {
         cout<<e.what()<<endl;//打印异常错误提示信息
     }
