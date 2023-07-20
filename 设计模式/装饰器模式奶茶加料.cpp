@@ -20,7 +20,7 @@ public:
     }
 };
 
-// 奶茶加料装饰器基类
+// 奶茶加料装饰器基类提供装饰器的基本功能
 class MilkTeaDecorator : public MilkTea {
 protected:
     MilkTea* milkTea; // 指向被装饰的奶茶对象的指针

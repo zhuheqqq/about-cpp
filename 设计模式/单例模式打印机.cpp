@@ -7,8 +7,13 @@ public:
     static Printer *getInstance()
     {
         return printer;//返回指针,提供只读接口
+
+        /*懒汉模式
+        if(printer==nullptr){
+            printer=new Printer;
+        }*/
     }
-    
+
     void printerText(string text)
     {
         cout<<text<<endl;
@@ -29,6 +34,7 @@ private:
     static Printer *printer;//唯一实例化指针私有化
 };
 
+// 静态成员初始化放到类外部处理
 Printer *Printer::printer=new Printer;
 
 void test01()
